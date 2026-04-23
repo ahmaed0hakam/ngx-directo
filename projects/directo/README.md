@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="directo_banner.png" alt="Directo / NG Banner" width="100%">
+  <img src="directo_banner_v4.png" alt="Directo / NG Banner" width="100%">
 </p>
 
 # ngx-directo
