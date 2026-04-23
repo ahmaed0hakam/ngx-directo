@@ -5,7 +5,7 @@
     "entryFile": "src/public-api.ts"
   },
   "assets": [
-    "directo_banner_v5.png",
-    "directo_logo_v6.png"
+    "directo_banner.png",
+    "directo_logo.png"
   ]
 }
