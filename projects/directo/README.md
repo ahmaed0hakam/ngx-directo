@@ -72,17 +72,55 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-### Loading External JSON (ar.json / en.json)
-For large-scale applications, you can hydrate the SDK dynamically from external files:
+### Loading Translations (Files vs. Inline)
 
+For production-grade applications, we recommend using the `APP_INITIALIZER` to fetch translation files (e.g., `ar.json`) during the Angular bootstrap process. This ensures your UI is fully localized before the first paint.
+
+**Unified Setup Example:**
 ```typescript
-// Inside a component or initializer
-const directo = inject(DirectoService);
-const http = inject(HttpClient);
+import { APP_INITIALIZER, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom, tap } from 'rxjs';
+import { provideDirecto, DirectoService } from 'ngx-directo';
 
-http.get('/assets/i18n/ar.json').subscribe(data => {
-  directo.setTranslations('ar', data);
-});
+export const appConfig: ApplicationConfig = {
+  providers: [
+    // 1. Configure the core SDK
+    provideDirecto({
+      languages: {
+        ar: { 
+          direction: 'rtl', 
+          fontFamily: 'Cairo, sans-serif', 
+          googleFontName: 'Cairo',
+          localizeDigits: true,
+          // translations: { WELCOME: 'مرحبا بكم' } // Option A: Inline JSON
+        },
+        en: { 
+          direction: 'ltr', 
+          fontFamily: 'Inter, sans-serif',
+          googleFontName: 'Inter'
+        }
+      },
+      defaultLang: 'en'
+    }),
+    // 2. Hydrate translations during bootstrap (Option B: External Files)
+    {
+      provide: APP_INITIALIZER,
+      useFactory: () => {
+        const directo = inject(DirectoService);
+        const http = inject(HttpClient);
+        const lang = directo.currentLang(); 
+        
+        return () => firstValueFrom(
+          http.get(`/assets/i18n/${lang}.json`).pipe(
+            tap(data => directo.setTranslations(lang, data))
+          )
+        );
+      },
+      multi: true
+    }
+  ]
+};
 ```
 
 ---
