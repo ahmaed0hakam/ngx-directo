@@ -40,43 +40,10 @@ npm install ngx-directo
 
 ---
 
-## Configuration
+## Configuration & Hydration
 
-Initialize the library in your app.config.ts using the environment provider:
+Initialize the library in your `app.config.ts`. You can provide translations directly in the config (Inline) or fetch them dynamically via external files (Recommended for production to prevent UI flickering).
 
-```typescript
-import { provideDirecto } from 'ngx-directo';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideDirecto({
-      languages: {
-        ar: { 
-          direction: 'rtl', 
-          fontFamily: 'Cairo, sans-serif', 
-          googleFontName: 'Cairo', // Auto-injected from Google Fonts
-          localizeDigits: true,    // Enables 0-9 to ٠-٩ conversion
-          translations: {
-            COMMON: { WELCOME: 'مرحبا بكم' }
-          }
-        },
-        en: { 
-          direction: 'ltr', 
-          fontFamily: 'Inter, sans-serif',
-          googleFontName: 'Inter'
-        }
-      },
-      defaultLang: 'en'
-    })
-  ]
-};
-```
-
-### Loading Translations (Files vs. Inline)
-
-For production-grade applications, we recommend using the `APP_INITIALIZER` to fetch translation files (e.g., `ar.json`) during the Angular bootstrap process. This ensures your UI is fully localized before the first paint.
-
-**Unified Setup Example:**
 ```typescript
 import { APP_INITIALIZER, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -91,8 +58,8 @@ export const appConfig: ApplicationConfig = {
         ar: { 
           direction: 'rtl', 
           fontFamily: 'Cairo, sans-serif', 
-          googleFontName: 'Cairo',
-          localizeDigits: true,
+          googleFontName: 'Cairo', // Auto-injected from Google Fonts
+          localizeDigits: true,    // Enables 0-9 to ٠-٩ conversion
           // translations: { WELCOME: 'مرحبا بكم' } // Option A: Inline JSON
         },
         en: { 
@@ -103,6 +70,7 @@ export const appConfig: ApplicationConfig = {
       },
       defaultLang: 'en'
     }),
+
     // 2. Hydrate translations during bootstrap (Option B: External Files)
     {
       provide: APP_INITIALIZER,
