@@ -1,0 +1,44 @@
+{
+  "name": "ngx-directo",
+  "version": "0.0.11",
+  "description": "The ultimate Angular 18+ Signals-based library for RTL/LTR directionality, Arabic localization, and Google Font orchestration. Zoneless-ready and high-performance.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ahmaed0hakam/ngx-directo.git"
+  },
+  "peerDependencies": {
+    "@angular/common": "^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0",
+    "@angular/core": "^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0",
+    "@angular/animations": "^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@angular/animations": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "keywords": [
+    "angular",
+    "angular-signals",
+    "rtl",
+    "ltr",
+    "directionality",
+    "bidi",
+    "bidirectional",
+    "localization",
+    "l10n",
+    "i18n",
+    "arabic",
+    "font-switcher",
+    "google-fonts",
+    "layout-flip",
+    "ngx-directo",
+    "zoneless",
+    "capacitor",
+    "ionic"
+  ],
+  "sideEffects": false
+}

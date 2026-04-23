@@ -1,0 +1,78 @@
+<div class="demo-container">
+  <header>
+    <div class="logo">
+      <span class="brand">Directo</span>
+      <span class="badge">v0.0.5</span>
+    </div>
+    <div class="actions">
+      <button class="hydrate-btn" (click)="hydrateExternalData()">Hydrate ar.json</button>
+      <button class="lang-toggle" (click)="switchLanguage()">
+        {{ directo.currentLang() === 'en' ? 'Arabic (العربية)' : 'English' }}
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <!-- Strategy 1: Object Mapping -->
+      <h1>{{ dashboardTitle | localize }}</h1>
+      <p dir="ltr" class="subtitle">{{ 'HERO.SUBTITLE' | directoTranslate }}</p>
+      
+      <!-- CSS Variable Showcase (The indicator moves based on --dir-sign) -->
+      <div class="dir-indicator-track">
+        <div class="dir-indicator-ball"></div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <!-- Feature 1: Manual Value Mapping (Core-Health style) -->
+      <div class="card">
+        <h3>Explicit Value Mapping</h3>
+        <p class="demo-value">{{ enValue | localize : arValue }}</p>
+        <span class="caption">API: enValue | localize : arValue</span>
+      </div>
+
+      <!-- Feature 2: DirFlip -->
+      <div class="card">
+        <h3>[dirFlip] Icon Mirroring</h3>
+        <div class="flip-demo">
+          <svg dirFlip xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+          <span>Arrow flips based on RTL/LTR</span>
+        </div>
+      </div>
+
+      <!-- Feature 3: DirNumber -->
+      <div class="card">
+        <h3>Localize Digits</h3>
+        <div class="number-demo">
+            <span class="num-text">{{ 2026 | dirNumber }}</span>
+            <span class="caption">Auto-converts 0-9 to native script</span>
+        </div>
+      </div>
+
+      <!-- Feature 4: DirInput -->
+      <div class="card">
+        <h3>LTR Input Lock</h3>
+        <label>International Phone / ID:</label>
+        <input type="text" dirInput placeholder="+966 5XX XXX XXXX">
+      </div>
+
+      <!-- Feature 5: DirAuto -->
+      <div class="card">
+        <h3>Smart Script Detection</h3>
+        <div class="auto-row">
+          <div [dirAuto]="testItem.mixed.arComment" class="bubble">{{ testItem.mixed.arComment }}</div>
+          <div [dirAuto]="testItem.mixed.enComment" class="bubble">{{ testItem.mixed.enComment }}</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>ngx-directo SDK &copy; 2026 - {{ 'FOOTER.CREATED_BY' | directoTranslate }} Ahmad Alhafi</p>
+  </footer>
+</div>
