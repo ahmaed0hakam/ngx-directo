@@ -24,11 +24,11 @@ import { DirectoConfig, DIRECTO_CONFIG } from '../models/directo.config';
  * });
  * ```
  */
-export function provideDirecto(config: DirectoConfig): EnvironmentProviders {
+export function provideDirecto(config?: DirectoConfig): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
       provide: DIRECTO_CONFIG,
-      useValue: config
+      useValue: config || null
     }
   ]);
 }

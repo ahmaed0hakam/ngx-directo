@@ -28,6 +28,7 @@ ngx-directo is a high-performance, lightweight Angular library for managing bi-d
 - **Reactive Design**: Built entirely on Angular Signals for high-performance state updates.
 - **Smart Detection**: MutationObserver-driven script detection for mixed-content isolation.
 - **Automatic Font Orchestration**: Dynamic injection of Google Fonts based on active language state.
+- **Intelligent Mapping**: Built-in support for all major RTL languages (`ar`, `he`, `fa`, `ur`, etc.) out of the box.
 - **CSS-Native Animations**: Direct injection of --dir-sign and --dir-align variables for zero-JS animations.
 
 ---
@@ -42,7 +43,21 @@ npm install ngx-directo
 
 ## Configuration & Hydration
 
-Initialize the library in your `app.config.ts`. You can provide translations directly in the config (Inline) or fetch them dynamically via external files (Recommended for production to prevent UI flickering).
+Initialize the library in your `app.config.ts`. Directo is designed to be **Zero-Config by default**, providing sensible fallbacks for English (LTR) and Arabic (RTL) out of the box.
+
+### Quick Start (Optional)
+If you just want to use the directives and pipes without advanced font orchestration or translation management:
+
+```typescript
+providers: [
+  provideDirecto() // Automatically supports ar, en, he, fa, ur, and more!
+]
+```
+
+Directo includes an **Intelligent Registry**. If you call `directo.setLanguage('he')`, it automatically knows Hebrew is RTL and swaps your entire layout, even if you didn't configure it.
+
+### Full Configuration & Hydration
+For production-grade applications, provide your specific language settings and hydration logic:
 
 ```typescript
 import { APP_INITIALIZER, inject } from '@angular/core';

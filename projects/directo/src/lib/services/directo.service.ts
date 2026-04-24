@@ -2,6 +2,16 @@ import { Injectable, signal, computed, effect, inject, PLATFORM_ID } from '@angu
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { DIRECTO_CONFIG, DirectoConfig } from '../models/directo.config';
 
+const RTL_LANGS = ['ar', 'he', 'fa', 'ur', 'ps', 'sd', 'ku', 'ug', 'ckb', 'arc', 'dv', 'yi'];
+
+const DEFAULT_CONFIG: DirectoConfig = {
+  languages: {
+    en: { direction: 'ltr', fontFamily: 'inherit' },
+    ar: { direction: 'rtl', fontFamily: 'inherit' }
+  },
+  defaultLang: 'en'
+};
+
 /**
  * The core service for managing application directionality, language state, and font orchestration.
  * Powering the Directo SDK by Ahmad Alhafi.
@@ -16,8 +26,10 @@ import { DIRECTO_CONFIG, DirectoConfig } from '../models/directo.config';
   providedIn: 'root'
 })
 export class DirectoService {
+  private readonly injectedConfig = inject(DIRECTO_CONFIG, { optional: true });
+  
   /** Reactive config state allowing runtime updates for translations */
-  private readonly configSignal = signal<DirectoConfig>(inject(DIRECTO_CONFIG));
+  private readonly configSignal = signal<DirectoConfig>(this.mergeWithDefaults(this.injectedConfig));
   
   private readonly document = inject(DOCUMENT);
   private readonly platformId = inject(PLATFORM_ID);
@@ -81,15 +93,30 @@ export class DirectoService {
   }
 
   /**
-   * Update the current language
-   * @param langCode The language code to switch to
+   * Update the current language. 
+   * If the language isn't in the config, Directo intelligently detects its direction.
+   * @param langCode The language code to switch to (e.g., 'he' for Hebrew)
    */
   setLanguage(langCode: string): void {
-    if (this.configSignal().languages[langCode]) {
-      this.currentLang.set(langCode);
-    } else {
-      console.warn(`[Directo] Language code "${langCode}" not found in configuration.`);
+    const config = this.configSignal();
+    
+    // If language doesn't exist in config, create a dynamic one
+    if (!config.languages[langCode]) {
+      const isRtl = RTL_LANGS.includes(langCode.toLowerCase().split('-')[0]);
+      
+      this.configSignal.update(curr => ({
+        ...curr,
+        languages: {
+          ...curr.languages,
+          [langCode]: {
+            direction: isRtl ? 'rtl' : 'ltr',
+            fontFamily: 'inherit'
+          }
+        }
+      }));
     }
+
+    this.currentLang.set(langCode);
   }
 
   /**
@@ -141,6 +168,19 @@ export class DirectoService {
     link.href = `https://fonts.googleapis.com/css2?family=${fontName.replace(/\s+/g, '+')}:wght@300;400;500;700&display=swap`;
 
     this.document.head.appendChild(link);
+  }
+
+  private mergeWithDefaults(config: DirectoConfig | null): DirectoConfig {
+    if (!config) return DEFAULT_CONFIG;
+    
+    return {
+      ...DEFAULT_CONFIG,
+      ...config,
+      languages: {
+        ...DEFAULT_CONFIG.languages,
+        ...config.languages
+      }
+    };
   }
 
   /**
