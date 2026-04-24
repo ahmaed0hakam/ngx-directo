@@ -3,5 +3,9 @@
   "dest": "../../dist/directo",
   "lib": {
     "entryFile": "src/public-api.ts"
-  }
+  },
+  "assets": [
+    "directo_banner.png",
+    "directo_logo.png"
+  ]
 }
