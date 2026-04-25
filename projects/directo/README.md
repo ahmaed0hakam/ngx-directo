@@ -141,7 +141,7 @@ Forces inputs to remain LTR. Critical for phone numbers, passwords, and codes.
 | Pipe | Description | Example |
 | :--- | :--- | :--- |
 | **localize** | Multi-strategy localization. Supports direct values, object mapping, or auto-key resolution. | `{{ enVal \| localize : arVal }}` or `{{ item \| localize : 'name' }}` |
-| **directoTranslate** | Resolves static UI strings via dot-notation. Can also force a specific language (optional parameter). | `{{ 'KEY' \| directoTranslate : 'ar' }}` |
+| **directoTranslate** | Resolves static UI strings via dot-notation. Supports interpolation ({{placeholders}}) and optional language forcing. | `{{ 'GREET' \| directoTranslate : { name: 'Ahmad' } }}` |
 | **dirMirror** | Swaps directional keywords in strings (left <-> right, next <-> prev). | `{{ 'chevron-right' \| dirMirror }}` |
 | **dirNumber** | Transforms Western digits (0-9) to native Arabic-Indic digits (٠-٩). | `{{ 2026 \| dirNumber }}` |
 

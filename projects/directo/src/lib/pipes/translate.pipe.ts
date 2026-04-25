@@ -8,11 +8,17 @@ import { DirectoService } from '../services/directo.service';
  * 
  * @usageNotes
  * ```html
- * <!-- Use current language -->
+ * <!-- Standard -->
  * <h2>{{ 'COMMON.WELCOME' | directoTranslate }}</h2>
  * 
- * <!-- Force a specific language -->
+ * <!-- With Interpolation ({ name: 'Ahmad' }) -->
+ * <span>{{ 'AUTH.GREET' | directoTranslate : { name: 'Ahmad' } }}</span>
+ * 
+ * <!-- Forced language -->
  * <span>{{ 'AUTH.LOGIN' | directoTranslate : 'ar' }}</span>
+ * 
+ * <!-- Interpolation + Forced language -->
+ * <span>{{ 'AUTH.GREET' | directoTranslate : { name: 'Ahmad' } : 'ar' }}</span>
  * ```
  */
 @Pipe({
@@ -23,8 +29,25 @@ import { DirectoService } from '../services/directo.service';
 export class DirectoTranslatePipe implements PipeTransform {
   private directo = inject(DirectoService);
 
-  transform(key: string, lang?: string): string {
+  /**
+   * Transforms the key into a translated string.
+   * 
+   * @param key The translation key
+   * @param paramsOrLang Optional interpolation parameters OR language code
+   * @param lang Optional language code if parameters were provided as the second argument
+   */
+  transform(key: string, paramsOrLang?: { [key: string]: any } | string, lang?: string): string {
     if (!key) return '';
-    return this.directo.translate(key, lang);
+
+    // Handle flexible overloads:
+    // 1. transform(key, 'ar') -> params=undefined, lang='ar'
+    // 2. transform(key, { name: '..' }) -> params={..}, lang=undefined
+    // 3. transform(key, { name: '..' }, 'ar') -> params={..}, lang='ar'
+    
+    if (typeof paramsOrLang === 'string') {
+      return this.directo.translate(key, undefined, paramsOrLang);
+    }
+
+    return this.directo.translate(key, paramsOrLang, lang);
   }
 }

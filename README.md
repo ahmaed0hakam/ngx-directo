@@ -45,7 +45,7 @@ npm install ngx-directo
 
 Initialize the library in your `app.config.ts`. Directo is designed to be **Zero-Config by default**, providing sensible fallbacks for English (LTR) and Arabic (RTL) out of the box.
 
-### 🚀 Production Setup (Recommended)
+### Production Setup (Recommended)
 For production-grade applications, use the `APP_INITIALIZER` pattern to hydrate translations before the app starts. This prevents any UI flickering during the bootstrap process.
 
 ```typescript
@@ -94,7 +94,7 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-### ⚡ Quick Start (Zero-Config)
+### Quick Start (Zero-Config)
 If you just want to use the directives and pipes without advanced font orchestration or translation management, you can skip the configuration entirely or pass an empty object:
 
 ```typescript

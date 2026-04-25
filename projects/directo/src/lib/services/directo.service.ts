@@ -186,12 +186,14 @@ export class DirectoService {
   /**
    * Translates a static key based on the language configuration.
    * Supports nested keys via dot notation (e.g. 'HOME.WELCOME')
+   * Supports interpolation via placeholders (e.g. 'Welcome, {{name}}')
    * 
    * @param key The translation key to look up
+   * @param params (Optional) Parameters for interpolation (e.g. { name: 'Ahmad' })
    * @param lang (Optional) Force a specific language dictionary (e.g. 'ar')
    * @returns The translated string or the original key if not found
    */
-  translate(key: string, lang?: string): string {
+  translate(key: string, params?: { [key: string]: any }, lang?: string): string {
     const config = lang 
       ? this.configSignal().languages[lang] 
       : this.currentConfig();
@@ -209,6 +211,16 @@ export class DirectoService {
       }
     }
 
-    return typeof result === 'string' ? result : key;
+    let translation = typeof result === 'string' ? result : key;
+
+    // Handle Interpolation
+    if (params && translation !== key) {
+      translation = translation.replace(/{{(.*?)}}/g, (match, p1) => {
+        const paramKey = p1.trim();
+        return params[paramKey] !== undefined ? params[paramKey] : match;
+      });
+    }
+
+    return translation;
   }
 }

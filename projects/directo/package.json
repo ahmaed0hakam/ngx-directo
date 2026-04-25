@@ -1,6 +1,6 @@
 {
   "name": "ngx-directo",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "The ultimate Angular 18+ Signals-based library for RTL/LTR directionality, Arabic localization, and Google Font orchestration. Zoneless-ready and high-performance.",
   "license": "MIT",
   "repository": {

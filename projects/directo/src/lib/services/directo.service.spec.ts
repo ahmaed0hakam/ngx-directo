@@ -54,4 +54,28 @@ describe('DirectoService', () => {
     const result = service.translate('NON_EXISTENT_KEY');
     expect(result).toBe('NON_EXISTENT_KEY');
   });
+  
+  it('should support interpolation with placeholders', () => {
+    service.setTranslations('en', { GREET: 'Hello {{name}}' });
+    const result = service.translate('GREET', { name: 'Ahmad' });
+    expect(result).toBe('Hello Ahmad');
+  });
+
+  it('should support multiple placeholders and handle efficiency', () => {
+    service.setTranslations('en', { MULTI: 'User {{first}} {{last}} has ID {{id}}' });
+    const result = service.translate('MULTI', { first: 'Ahmad', last: 'Alhafi', id: 42 });
+    expect(result).toBe('User Ahmad Alhafi has ID 42');
+  });
+
+  it('should ignore placeholders if no params provided', () => {
+    service.setTranslations('en', { GREET: 'Hello {{name}}' });
+    const result = service.translate('GREET');
+    expect(result).toBe('Hello {{name}}');
+  });
+
+  it('should handle spaces in placeholders via trim', () => {
+    service.setTranslations('en', { GREET: 'Hello {{  name  }}' });
+    const result = service.translate('GREET', { name: 'Ahmad' });
+    expect(result).toBe('Hello Ahmad');
+  });
 });

@@ -23,7 +23,9 @@ describe('DirNumberPipe', () => {
       ]
     });
     service = TestBed.inject(DirectoService);
-    pipe = new DirNumberPipe();
+    TestBed.runInInjectionContext(() => {
+      pipe = new DirNumberPipe();
+    });
     // Inject service into pipe manually since it's not provided by DI in the constructor for pipes 
     // unless used in a component, but we can mock it.
     (pipe as any).directo = service;

@@ -35,14 +35,12 @@ export class DirMirrorPipe implements PipeTransform {
       'end': 'start'
     };
 
-    let result = value.toLowerCase();
-    Object.keys(replacements).forEach(key => {
-      if (result.includes(key)) {
-        // Simple swap logic
-        result = result.replace(key, replacements[key]);
-      }
+    const keys = Object.keys(replacements);
+    const pattern = new RegExp(`\\b(${keys.join('|')})\\b|(${keys.join('|')})`, 'g');
+    
+    return value.replace(pattern, (matched) => {
+      const lower = matched.toLowerCase();
+      return replacements[lower] || matched;
     });
-
-    return result;
   }
 }

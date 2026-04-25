@@ -23,7 +23,9 @@ describe('DirMirrorPipe', () => {
       ]
     });
     service = TestBed.inject(DirectoService);
-    pipe = new DirMirrorPipe();
+    TestBed.runInInjectionContext(() => {
+      pipe = new DirMirrorPipe();
+    });
     (pipe as any).directo = service;
   });
 
