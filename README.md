@@ -71,10 +71,11 @@ export const appConfig: ApplicationConfig = {
         }
       },
       defaultLang: 'en',
-      // Option A: Automatic translation loading from ./assets/i18n/{{lang}}.json (using HttpClient)
+      // Option A: Automatic translation loading (using HttpClient)
+      // Default: ./assets/i18n/{{lang}}.json
       loader: {
         provide: DIRECTO_LOADER,
-        useFactory: (http: HttpClient) => new DirectoHttpLoader(http),
+        useFactory: (http: HttpClient) => new DirectoHttpLoader(http, './assets/i18n/', '.json'),
         deps: [HttpClient]
       }
 
@@ -116,7 +117,7 @@ providers: [
 ]
 ```
 
-Directo includes an **Intelligent Registry**. If you call `directo.setLanguage('he')`, it automatically knows Hebrew is RTL and swaps your entire layout, even if you didn't configure it.
+Directo includes an **Intelligent Registry**. If you call `directo.setLanguage('ar')`, it automatically knows Arabic is RTL and swaps your entire layout, even if you didn't configure it.
 
 ---
 

@@ -28,7 +28,7 @@ ngx-directo is a high-performance, lightweight Angular library for managing bi-d
 - **Reactive Design**: Built entirely on Angular Signals for high-performance state updates.
 - **Smart Detection**: MutationObserver-driven script detection for mixed-content isolation.
 - **Automatic Font Orchestration**: Dynamic injection of Google Fonts based on active language state.
-- **Intelligent Mapping**: Built-in support for all major RTL languages (`ar`, `fa`, `ur`, etc.) out of the box.
+- **Intelligent Mapping**: Built-in support for all major RTL languages (`ar`, `he`, `fa`, `ur`, etc.) out of the box.
 - **CSS-Native Animations**: Direct injection of --dir-sign and --dir-align variables for zero-JS animations.
 
 ---
@@ -46,17 +46,16 @@ npm install ngx-directo
 Initialize the library in your `app.config.ts`. Directo is designed to be **Zero-Config by default**, providing sensible fallbacks for English (LTR) and Arabic (RTL) out of the box.
 
 ### Production Setup (Recommended)
-For production-grade applications, use the `APP_INITIALIZER` pattern to hydrate translations before the app starts. This prevents any UI flickering during the bootstrap process.
+Directo is designed to be **Zero-Config by default**, providing sensible fallbacks for English (LTR) and Arabic (RTL) out of the box. For production-grade applications, you can use the built-in `DirectoLoader` to automate translation loading.
 
 ```typescript
-import { APP_INITIALIZER, inject, ApplicationConfig } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom, tap } from 'rxjs';
-import { provideDirecto, DirectoService } from 'ngx-directo';
+import { ApplicationConfig } from '@angular/core';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideDirecto, DIRECTO_LOADER, DirectoHttpLoader, DirectoFetchLoader } from 'ngx-directo';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // 1. Configure the core SDK
+    provideHttpClient(),
     provideDirecto({
       languages: {
         ar: { 
@@ -71,27 +70,42 @@ export const appConfig: ApplicationConfig = {
           googleFontName: 'Inter'
         }
       },
-      defaultLang: 'en'
-    }),
+      defaultLang: 'en',
+      // Option A: Automatic translation loading (using HttpClient)
+      // Default: ./assets/i18n/{{lang}}.json
+      loader: {
+        provide: DIRECTO_LOADER,
+        useFactory: (http: HttpClient) => new DirectoHttpLoader(http, './assets/i18n/', '.json'),
+        deps: [HttpClient]
+      }
 
-    // 2. Hydrate translations during bootstrap
-    {
-      provide: APP_INITIALIZER,
-      useFactory: () => {
-        const directo = inject(DirectoService);
-        const http = inject(HttpClient);
-        const lang = directo.currentLang(); 
-        
-        return () => firstValueFrom(
-          http.get(`/assets/i18n/${lang}.json`).pipe(
-            tap(data => directo.setTranslations(lang, data))
-          )
-        );
-      },
-      multi: true
-    }
+      // Option B: Native Fetch-based loading (No HttpClient dependency)
+      // loader: {
+      //   provide: DIRECTO_LOADER,
+      //   useValue: new DirectoFetchLoader('/assets/i18n/{{lang}}.json')
+      // }
+    })
   ]
 };
+```
+
+### Option C: Manual Hydration (Advanced)
+If you need complete control over the loading process (e.g., merging multiple JSON files or complex logic), you can still use the `APP_INITIALIZER` pattern to call `setTranslations()` manually.
+
+```typescript
+{
+  provide: APP_INITIALIZER,
+  useFactory: () => {
+    const directo = inject(DirectoService);
+    const http = inject(HttpClient);
+    return () => firstValueFrom(
+      http.get(`/assets/i18n/${directo.currentLang()}.json`).pipe(
+        tap(data => directo.setTranslations(directo.currentLang(), data))
+      )
+    );
+  },
+  multi: true
+}
 ```
 
 ### Quick Start (Zero-Config)
@@ -99,7 +113,7 @@ If you just want to use the directives and pipes without advanced font orchestra
 
 ```typescript
 providers: [
-  provideDirecto() // Automatically supports ar, en, fa, ur, and more!
+  provideDirecto() // Automatically supports ar, en, he, fa, ur, and more!
 ]
 ```
 
@@ -141,10 +155,9 @@ Forces inputs to remain LTR. Critical for phone numbers, passwords, and codes.
 | Pipe | Description | Example |
 | :--- | :--- | :--- |
 | **localize** | Multi-strategy localization. Supports direct values, object mapping, or auto-key resolution. | `{{ enVal \| localize : arVal }}` or `{{ item \| localize : 'name' }}` |
-| **directoTranslate** | Resolves static UI strings via dot-notation. Supports interpolation ({{placeholders}}) and optional language forcing. | `{{ 'GREET' \| directoTranslate : { name: 'Ahmad' } }}` |
+| **directoTranslate** | Resolves static UI strings via dot-notation. Can also force a specific language (optional parameter). | `{{ 'KEY' \| directoTranslate : 'ar' }}` |
 | **dirMirror** | Swaps directional keywords in strings (left <-> right, next <-> prev). | `{{ 'chevron-right' \| dirMirror }}` |
 | **dirNumber** | Transforms Western digits (0-9) to native Arabic-Indic digits (٠-٩). | `{{ 2026 \| dirNumber }}` |
-
 ---
 
 ## Zero-JS Directional Logic
