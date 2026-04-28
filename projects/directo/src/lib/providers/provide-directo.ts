@@ -1,5 +1,5 @@
 import { Provider, EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
-import { DirectoConfig, DIRECTO_CONFIG } from '../models/directo.config';
+import { DirectoConfig, DIRECTO_CONFIG, DIRECTO_LOADER } from '../models/directo.config';
 
 /**
  * Main Provider Helper for the Directo SDK.
@@ -18,17 +18,28 @@ import { DirectoConfig, DIRECTO_CONFIG } from '../models/directo.config';
  *         ar: { direction: 'rtl', fontFamily: 'Cairo' },
  *         en: { direction: 'ltr', fontFamily: 'Inter' }
  *       },
- *       defaultLang: 'en'
+ *       defaultLang: 'en',
+ *       loader: {
+ *         provide: DIRECTO_LOADER,
+ *         useFactory: (http: HttpClient) => new DirectoHttpLoader(http),
+ *         deps: [HttpClient]
+ *       }
  *     })
  *   ]
  * });
  * ```
  */
 export function provideDirecto(config?: DirectoConfig): EnvironmentProviders {
-  return makeEnvironmentProviders([
+  const providers: Provider[] = [
     {
       provide: DIRECTO_CONFIG,
       useValue: config || null
     }
-  ]);
+  ];
+
+  if (config?.loader) {
+    providers.push(config.loader);
+  }
+
+  return makeEnvironmentProviders(providers);
 }

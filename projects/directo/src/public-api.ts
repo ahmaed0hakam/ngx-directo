@@ -14,3 +14,6 @@ export * from './lib/pipes/dir-mirror.pipe';
 export * from './lib/pipes/dir-number.pipe';
 export * from './lib/utils/animation.utils';
 export * from './lib/providers/provide-directo';
+export * from './lib/models/directo-loader';
+export * from './lib/loaders/directo-http-loader';
+export * from './lib/loaders/directo-fetch-loader';

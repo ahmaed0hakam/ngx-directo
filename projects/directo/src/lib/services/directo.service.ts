@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, effect, inject, PLATFORM_ID } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { DIRECTO_CONFIG, DirectoConfig } from '../models/directo.config';
+import { DIRECTO_CONFIG, DirectoConfig, DIRECTO_LOADER } from '../models/directo.config';
+import { firstValueFrom } from 'rxjs';
 
 const RTL_LANGS = ['ar', 'he', 'fa', 'ur', 'ps', 'sd', 'ku', 'ug', 'ckb', 'arc', 'dv', 'yi'];
 
@@ -27,6 +28,7 @@ const DEFAULT_CONFIG: DirectoConfig = {
 })
 export class DirectoService {
   private readonly injectedConfig = inject(DIRECTO_CONFIG, { optional: true });
+  private readonly loader = inject(DIRECTO_LOADER, { optional: true });
   
   /** Reactive config state allowing runtime updates for translations */
   private readonly configSignal = signal<DirectoConfig>(this.mergeWithDefaults(this.injectedConfig));
@@ -55,6 +57,11 @@ export class DirectoService {
       if (savedLang && config.languages[savedLang]) {
         this.currentLang.set(savedLang);
       }
+    }
+
+    // Initial load if loader is present
+    if (this.loader) {
+      this.loadTranslations(this.currentLang());
     }
 
     // Reaction: Sync state to DOM and Persistence
@@ -117,6 +124,10 @@ export class DirectoService {
     }
 
     this.currentLang.set(langCode);
+
+    if (this.loader) {
+      this.loadTranslations(langCode);
+    }
   }
 
   /**
@@ -154,6 +165,16 @@ export class DirectoService {
         }
       };
     });
+  }
+
+  private async loadTranslations(lang: string) {
+    if (!this.loader) return;
+    try {
+      const translations = await firstValueFrom(this.loader.getTranslation(lang));
+      this.setTranslations(lang, translations);
+    } catch (error) {
+      console.error(`Directo: Failed to load translations for ${lang}`, error);
+    }
   }
 
   private injectGoogleFont(fontName: string): void {

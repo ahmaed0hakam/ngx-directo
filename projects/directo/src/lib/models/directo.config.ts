@@ -1,4 +1,5 @@
-import { InjectionToken } from '@angular/core';
+import { InjectionToken, Provider } from '@angular/core';
+import { DirectoLoader } from './directo-loader';
 
 /**
  * Configuration for a single language in the Directo system.
@@ -25,6 +26,8 @@ export interface DirectoConfig {
   languages: { [langCode: string]: LanguageConfig };
   defaultLang: string;
   storageKey?: string; // Defaults to 'directo_lang'
+  loader?: Provider;
 }
 
 export const DIRECTO_CONFIG = new InjectionToken<DirectoConfig>('DIRECTO_CONFIG');
+export const DIRECTO_LOADER = new InjectionToken<DirectoLoader>('DIRECTO_LOADER');

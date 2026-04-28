@@ -46,17 +46,16 @@ npm install ngx-directo
 Initialize the library in your `app.config.ts`. Directo is designed to be **Zero-Config by default**, providing sensible fallbacks for English (LTR) and Arabic (RTL) out of the box.
 
 ### Production Setup (Recommended)
-For production-grade applications, use the `APP_INITIALIZER` pattern to hydrate translations before the app starts. This prevents any UI flickering during the bootstrap process.
+Directo is designed to be **Zero-Config by default**, providing sensible fallbacks for English (LTR) and Arabic (RTL) out of the box. For production-grade applications, you can use the built-in `DirectoLoader` to automate translation loading.
 
 ```typescript
-import { APP_INITIALIZER, inject, ApplicationConfig } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom, tap } from 'rxjs';
-import { provideDirecto, DirectoService } from 'ngx-directo';
+import { ApplicationConfig } from '@angular/core';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideDirecto, DIRECTO_LOADER, DirectoHttpLoader, DirectoFetchLoader } from 'ngx-directo';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // 1. Configure the core SDK
+    provideHttpClient(),
     provideDirecto({
       languages: {
         ar: { 
@@ -71,27 +70,41 @@ export const appConfig: ApplicationConfig = {
           googleFontName: 'Inter'
         }
       },
-      defaultLang: 'en'
-    }),
+      defaultLang: 'en',
+      // Option A: Automatic translation loading from ./assets/i18n/{{lang}}.json (using HttpClient)
+      loader: {
+        provide: DIRECTO_LOADER,
+        useFactory: (http: HttpClient) => new DirectoHttpLoader(http),
+        deps: [HttpClient]
+      }
 
-    // 2. Hydrate translations during bootstrap
-    {
-      provide: APP_INITIALIZER,
-      useFactory: () => {
-        const directo = inject(DirectoService);
-        const http = inject(HttpClient);
-        const lang = directo.currentLang(); 
-        
-        return () => firstValueFrom(
-          http.get(`/assets/i18n/${lang}.json`).pipe(
-            tap(data => directo.setTranslations(lang, data))
-          )
-        );
-      },
-      multi: true
-    }
+      // Option B: Native Fetch-based loading (No HttpClient dependency)
+      // loader: {
+      //   provide: DIRECTO_LOADER,
+      //   useValue: new DirectoFetchLoader('/assets/i18n/{{lang}}.json')
+      // }
+    })
   ]
 };
+```
+
+### Option C: Manual Hydration (Advanced)
+If you need complete control over the loading process (e.g., merging multiple JSON files or complex logic), you can still use the `APP_INITIALIZER` pattern to call `setTranslations()` manually.
+
+```typescript
+{
+  provide: APP_INITIALIZER,
+  useFactory: () => {
+    const directo = inject(DirectoService);
+    const http = inject(HttpClient);
+    return () => firstValueFrom(
+      http.get(`/assets/i18n/${directo.currentLang()}.json`).pipe(
+        tap(data => directo.setTranslations(directo.currentLang(), data))
+      )
+    );
+  },
+  multi: true
+}
 ```
 
 ### Quick Start (Zero-Config)
