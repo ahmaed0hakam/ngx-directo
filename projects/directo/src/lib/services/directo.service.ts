@@ -10,7 +10,8 @@ const DEFAULT_CONFIG: DirectoConfig = {
     en: { direction: 'ltr', fontFamily: 'inherit' },
     ar: { direction: 'rtl', fontFamily: 'inherit' }
   },
-  defaultLang: 'en'
+  defaultLang: 'en',
+  preloadAll: false
 };
 
 /**
@@ -61,7 +62,14 @@ export class DirectoService {
 
     // Initial load if loader is present
     if (this.loader) {
-      this.loadTranslations(this.currentLang());
+      const config = this.configSignal();
+      if (config.preloadAll) {
+        Object.keys(config.languages).forEach(lang => {
+          this.loadTranslations(lang);
+        });
+      } else {
+        this.loadTranslations(this.currentLang());
+      }
     }
 
     // Reaction: Sync state to DOM and Persistence
@@ -126,7 +134,10 @@ export class DirectoService {
     this.currentLang.set(langCode);
 
     if (this.loader) {
-      this.loadTranslations(langCode);
+      const config = this.configSignal();
+      if (!config.preloadAll || !config.languages[langCode]?.translations) {
+        this.loadTranslations(langCode);
+      }
     }
   }
 

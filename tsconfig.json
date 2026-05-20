@@ -4,7 +4,8 @@
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
-      "directo": ["./projects/directo/src/public-api.ts"]
+      "directo": ["./projects/directo/src/public-api.ts"],
+      "ngx-directo": ["./projects/directo/src/public-api.ts"]
     },
     "strict": true,
     "noImplicitOverride": true,

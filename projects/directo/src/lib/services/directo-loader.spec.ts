@@ -112,4 +112,64 @@ describe('DirectoService with Loader', () => {
     expect(service.translate('GREETING')).toBe('GREETING');
     // consoleSpy might have been called if we tried to load 'fr'
   });
+
+  describe('with preloadAll enabled', () => {
+    let preloadService: DirectoService;
+    let preloadLoader: MockLoader;
+
+    beforeEach(() => {
+      preloadLoader = new MockLoader();
+      vi.spyOn(preloadLoader, 'getTranslation');
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideDirecto({
+            languages: {
+              en: { direction: 'ltr', fontFamily: 'Inter' },
+              ar: { direction: 'rtl', fontFamily: 'Cairo' }
+            },
+            defaultLang: 'en',
+            preloadAll: true,
+            loader: {
+              provide: DIRECTO_LOADER,
+              useValue: preloadLoader
+            }
+          })
+        ]
+      });
+      preloadService = TestBed.inject(DirectoService);
+    });
+
+    it('should load all configured translations on init', async () => {
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      expect(preloadLoader.getTranslation).toHaveBeenCalledWith('en');
+      expect(preloadLoader.getTranslation).toHaveBeenCalledWith('ar');
+      expect(preloadService.translate('GREETING', undefined, 'en')).toBe('Hello');
+      expect(preloadService.translate('GREETING', undefined, 'ar')).toBe('مرحبا');
+    });
+
+    it('should not load translations again when switching to a preloaded language', async () => {
+      await new Promise(resolve => setTimeout(resolve, 50));
+      vi.mocked(preloadLoader.getTranslation).mockClear();
+
+      preloadService.setLanguage('ar');
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      expect(preloadLoader.getTranslation).not.toHaveBeenCalled();
+    });
+
+    it('should load translations for a new language dynamic configuration', async () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      await new Promise(resolve => setTimeout(resolve, 50));
+      vi.mocked(preloadLoader.getTranslation).mockClear();
+
+      preloadService.setLanguage('fr');
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      expect(preloadLoader.getTranslation).toHaveBeenCalledWith('fr');
+      consoleSpy.mockRestore();
+    });
+  });
 });

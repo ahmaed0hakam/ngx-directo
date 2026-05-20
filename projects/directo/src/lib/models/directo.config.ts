@@ -27,6 +27,7 @@ export interface DirectoConfig {
   defaultLang: string;
   storageKey?: string; // Defaults to 'directo_lang'
   loader?: Provider;
+  preloadAll?: boolean;
 }
 
 export const DIRECTO_CONFIG = new InjectionToken<DirectoConfig>('DIRECTO_CONFIG');

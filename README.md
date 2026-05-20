@@ -71,6 +71,7 @@ export const appConfig: ApplicationConfig = {
         }
       },
       defaultLang: 'en',
+      preloadAll: true, // Optional: Preloads translations for all languages on startup (useful for translate pipe with forced languages)
       // Option A: Automatic translation loading (using HttpClient)
       // Default: ./assets/i18n/{{lang}}.json
       loader: {

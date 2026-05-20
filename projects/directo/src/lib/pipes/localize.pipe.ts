@@ -51,6 +51,16 @@ export class LocalizePipe implements PipeTransform {
         return value[localizedKey] || value[baseKey] || '';
     }
 
+    // Strategy 4: Direct Object Translation (Value is the language map itself)
+    if (value && typeof value === 'object' && args.length === 0) {
+      if (lang in value) {
+        return value[lang];
+      }
+      if ('en' in value) {
+        return value['en'];
+      }
+    }
+
     return value || '';
   }
 }
