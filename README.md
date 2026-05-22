@@ -27,7 +27,7 @@ ngx-directo is a high-performance, lightweight Angular library for managing bi-d
 - **Zoneless Optimized**: Zero dependence on NgZone. Perfectly compatible with provideZonelessChangeDetection().
 - **Reactive Design**: Built entirely on Angular Signals for high-performance state updates.
 - **Smart Detection**: MutationObserver-driven script detection for mixed-content isolation.
-- **Automatic Font Orchestration**: Dynamic injection of Google Fonts based on active language state.
+- **Automatic Font Orchestration**: Dynamic injection of Google Fonts based on active language state, with optional initial preloading for all configured languages.
 - **Intelligent Mapping**: Built-in support for all major RTL languages (`ar`, `he`, `fa`, `ur`, etc.) out of the box.
 - **CSS-Native Animations**: Direct injection of --dir-sign and --dir-align variables for zero-JS animations.
 
@@ -71,7 +71,7 @@ export const appConfig: ApplicationConfig = {
         }
       },
       defaultLang: 'en',
-      preloadAll: true, // Optional: Preloads translations for all languages on startup (useful for translate pipe with forced languages)
+      preloadAll: true, // Optional: Preloads translations and fonts for all languages on startup (useful for translate pipe with forced languages)
       // Option A: Automatic translation loading (using HttpClient)
       // Default: ./assets/i18n/{{lang}}.json
       loader: {
