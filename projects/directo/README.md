@@ -109,6 +109,18 @@ If you need complete control over the loading process (e.g., merging multiple JS
 }
 ```
 
+### Dynamic Configuration (Multi-Tenant)
+Directo allows you to dynamically update the configuration of a specific language at runtime. This is particularly useful for handling multi-tenant branding overrides, such as changing fonts dynamically.
+
+```typescript
+// Update the font for the 'en' language and automatically inject it
+directo.updateLanguageConfig('en', { 
+  googleFontName: 'Roboto', 
+  fontFamily: 'Roboto, sans-serif',
+  direction: 'ltr'
+});
+```
+
 ### Quick Start (Zero-Config)
 If you just want to use the directives and pipes without advanced font orchestration or translation management, you can skip the configuration entirely or pass an empty object:
 

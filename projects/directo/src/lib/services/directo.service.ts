@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, effect, inject, PLATFORM_ID } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { DIRECTO_CONFIG, DirectoConfig, DIRECTO_LOADER } from '../models/directo.config';
+import { DIRECTO_CONFIG, DirectoConfig, LanguageConfig, DIRECTO_LOADER } from '../models/directo.config';
 import { firstValueFrom } from 'rxjs';
 
 const RTL_LANGS = ['ar', 'he', 'fa', 'ur', 'ps', 'sd', 'ku', 'ug', 'ckb', 'arc', 'dv', 'yi'];
@@ -167,6 +167,37 @@ export class DirectoService {
   }
 
   /**
+   * Dynamically updates the configuration for a specific language at runtime.
+   * Useful for handling multi-tenant branding overrides (e.g. changing fonts after login).
+   * 
+   * @param lang The language key (e.g., 'ar')
+   * @param partialConfig The configuration properties to update
+   */
+  updateLanguageConfig(lang: string, partialConfig: Partial<LanguageConfig>) {
+    this.configSignal.update(current => {
+      if (!current.languages[lang]) return current;
+      
+      const newLangConfig = {
+        ...current.languages[lang],
+        ...partialConfig
+      };
+
+      // If a new font is provided, optionally inject it
+      if (partialConfig.googleFontName && this.isBrowser) {
+        this.injectGoogleFont(partialConfig.googleFontName);
+      }
+
+      return {
+        ...current,
+        languages: {
+          ...current.languages,
+          [lang]: newLangConfig
+        }
+      };
+    });
+  }
+
+  /**
    * Dynamically updates the translation dictionary for a specific language.
    * Useful for loading external JSON files (e.g., ar.json) at runtime.
    * 
@@ -174,20 +205,7 @@ export class DirectoService {
    * @param translations The translation object fetched from a JSON file or API
    */
   setTranslations(lang: string, translations: { [key: string]: any }) {
-    this.configSignal.update(current => {
-      if (!current.languages[lang]) return current;
-      
-      return {
-        ...current,
-        languages: {
-          ...current.languages,
-          [lang]: {
-            ...current.languages[lang],
-            translations
-          }
-        }
-      };
-    });
+    this.updateLanguageConfig(lang, { translations });
   }
 
   private async loadTranslations(lang: string) {
