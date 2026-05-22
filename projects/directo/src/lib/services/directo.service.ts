@@ -72,6 +72,18 @@ export class DirectoService {
       }
     }
 
+    // Initial Font Preloading
+    if (this.isBrowser) {
+      const config = this.configSignal();
+      if (config.preloadAll) {
+        Object.values(config.languages).forEach(langConfig => {
+          if (langConfig.googleFontName) {
+            this.injectGoogleFont(langConfig.googleFontName);
+          }
+        });
+      }
+    }
+
     // Reaction: Sync state to DOM and Persistence
     effect(() => {
       const lang = this.currentLang();
