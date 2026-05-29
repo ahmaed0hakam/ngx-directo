@@ -121,6 +121,11 @@ directo.updateLanguageConfig('en', {
 });
 ```
 
+### Configuration Flexibility (Optional Fields)
+Both `direction` and `fontFamily` are now fully optional in the language configuration:
+- **direction**: If omitted, Directo dynamically auto-detects the layout direction from the language code (e.g. `'ar'` is detected as RTL, `'en'` as LTR).
+- **fontFamily**: If omitted, it defaults to `'inherit'` to respect your active stylesheet's typography.
+
 ### Quick Start (Zero-Config)
 If you just want to use the directives and pipes without advanced font orchestration or translation management, you can skip the configuration entirely or pass an empty object:
 
@@ -171,6 +176,10 @@ Forces inputs to remain LTR. Critical for phone numbers, passwords, and codes.
 | **directoTranslate** | Resolves static UI strings via dot-notation. Can also force a specific language (optional parameter). | `{{ 'KEY' \| directoTranslate : 'ar' }}` |
 | **dirMirror** | Swaps directional keywords in strings (left <-> right, next <-> prev). | `{{ 'chevron-right' \| dirMirror }}` |
 | **dirNumber** | Transforms Western digits (0-9) to native Arabic-Indic digits (٠-٩). | `{{ 2026 \| dirNumber }}` |
+
+> [!IMPORTANT]
+> **Forced Language Preloading**: When using `directoTranslate` with a forced language code (e.g., `{{ 'KEY' | directoTranslate : 'ar' }}`), you **must** configure `preloadAll: true` in your `app.config.ts`.
+> Since forced translations must be resolved synchronously during template rendering, the dictionaries must be loaded upfront.
 ---
 
 ## Zero-JS Directional Logic
