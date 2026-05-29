@@ -59,11 +59,8 @@ describe('DirAutoDirective', () => {
     expect(el.getAttribute('dir')).toBe('ltr');
 
     component.magicText = 'مرحبا';
-    fixture.detectChanges();
-    
-    // Wait for MutationObserver to kick in (simulated here)
-    // In a real browser this would be async, in JSDOM it might be instant
-    await new Promise(resolve => setTimeout(resolve, 0));
+    fixture.changeDetectorRef.markForCheck();
+    await fixture.whenStable();
     
     expect(el.getAttribute('dir')).toBe('rtl');
   });

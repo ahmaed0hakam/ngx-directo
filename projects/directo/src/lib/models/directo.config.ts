@@ -6,11 +6,11 @@ import { DirectoLoader } from './directo-loader';
  * Powering the Directo SDK by Ahmad Alhafi.
  */
 export interface LanguageConfig {
-  /** Text direction: 'rtl' for Arabic or 'ltr' for English */
-  direction: 'rtl' | 'ltr';
+  /** (Optional) Text direction: 'rtl' for Arabic or 'ltr' for English. If omitted, auto-detected from language code. */
+  direction?: 'rtl' | 'ltr';
 
-  /** The CSS font secondary stack or specific web font (e.g., "'Cairo', sans-serif") */
-  fontFamily: string;
+  /** (Optional) The CSS font secondary stack or specific web font (e.g., "'Cairo', sans-serif"). Defaults to 'inherit'. */
+  fontFamily?: string;
 
   /** (Optional) Name of the Google Font to automatically load in the document head */
   googleFontName?: string;

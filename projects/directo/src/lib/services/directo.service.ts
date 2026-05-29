@@ -45,7 +45,11 @@ export class DirectoService {
 
   // Computed Signals
   readonly currentConfig = computed(() => this.configSignal().languages[this.currentLang()]);
-  readonly isRtl = computed(() => this.currentConfig()?.direction === 'rtl');
+  readonly isRtl = computed(() => {
+    const config = this.currentConfig();
+    const direction = config?.direction || (RTL_LANGS.includes(this.currentLang().toLowerCase().split('-')[0]) ? 'rtl' : 'ltr');
+    return direction === 'rtl';
+  });
   readonly startSide = computed(() => this.isRtl() ? 'right' : 'left');
   readonly endSide = computed(() => this.isRtl() ? 'left' : 'right');
 
@@ -91,12 +95,12 @@ export class DirectoService {
       const isRtl = this.isRtl();
       const storageKey = this.configSignal().storageKey || this.defaultStorageKey;
 
-      if (!config) return;
+      const direction = config?.direction || (isRtl ? 'rtl' : 'ltr');
 
       // Update DOM
-      this.document.documentElement.dir = config.direction;
+      this.document.documentElement.dir = direction;
       this.document.documentElement.lang = lang;
-      this.document.body.style.setProperty('--directo-font-family', config.fontFamily);
+      this.document.body.style.setProperty('--directo-font-family', config?.fontFamily || 'inherit');
 
       // 5. Update global CSS variables for native animations
       const root = this.document.documentElement;
@@ -110,7 +114,7 @@ export class DirectoService {
       }
 
       // Font Injection
-      if (config.googleFontName) {
+      if (config?.googleFontName) {
         this.injectGoogleFont(config.googleFontName);
       }
 
@@ -157,7 +161,9 @@ export class DirectoService {
    * Sync directionality with third-party libraries (Material, Ionic)
    */
   syncWithThirdParty(): void {
-    const direction = this.currentConfig().direction;
+    const config = this.currentConfig();
+    if (!config) return;
+    const direction = config.direction || (this.isRtl() ? 'rtl' : 'ltr');
 
     // Ionic Bridge (Dynamic Check)
     const win = window as any;
@@ -252,7 +258,7 @@ export class DirectoService {
    * 
    * @param key The translation key to look up
    * @param params (Optional) Parameters for interpolation (e.g. { name: 'Ahmad' })
-   * @param lang (Optional) Force a specific language dictionary (e.g. 'ar')
+   * @param lang (Optional) Force a specific language dictionary (e.g. 'ar'). Note: When forcing a language, ensure `preloadAll: true` is configured.
    * @returns The translated string or the original key if not found
    */
   translate(key: string, params?: { [key: string]: any }, lang?: string): string {

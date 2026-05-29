@@ -78,4 +78,14 @@ describe('DirectoService', () => {
     const result = service.translate('GREET', { name: 'Ahmad' });
     expect(result).toBe('Hello Ahmad');
   });
+
+  it('should fallback to RTL direction for unconfigured RTL languages', () => {
+    service.currentLang.set('fa-IR');
+    expect(service.isRtl()).toBe(true);
+  });
+
+  it('should fallback to LTR direction for unconfigured LTR languages', () => {
+    service.currentLang.set('fr-FR');
+    expect(service.isRtl()).toBe(false);
+  });
 });

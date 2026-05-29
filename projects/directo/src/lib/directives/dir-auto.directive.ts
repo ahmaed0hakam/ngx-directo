@@ -50,12 +50,14 @@ export class DirAutoDirective implements AfterViewInit, OnDestroy {
 
   private updateDirection() {
     const val = this.value();
-    const text = val !== null && val !== undefined
+    const text = val !== null && val !== undefined && val.trim() !== ''
       ? val
-      : this.el.nativeElement.innerText;
+      : (this.el.nativeElement.textContent || this.el.nativeElement.innerText || '');
 
     const direction = this.detectDirection(text);
-    this.el.nativeElement.setAttribute('dir', direction);
+    if (this.el.nativeElement.getAttribute('dir') !== direction) {
+      this.el.nativeElement.setAttribute('dir', direction);
+    }
   }
 
   private detectDirection(text: string): 'rtl' | 'ltr' {

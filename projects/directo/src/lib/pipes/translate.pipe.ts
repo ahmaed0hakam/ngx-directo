@@ -20,6 +20,9 @@ import { DirectoService } from '../services/directo.service';
  * <!-- Interpolation + Forced language -->
  * <span>{{ 'AUTH.GREET' | directoTranslate : { name: 'Ahmad' } : 'ar' }}</span>
  * ```
+ * 
+ * @note When forcing a language (e.g. `'ar'`), ensure `preloadAll: true` is configured in your Directo config
+ * so that all translation dictionaries are preloaded and available synchronously.
  */
 @Pipe({
   name: 'directoTranslate',
@@ -33,8 +36,8 @@ export class DirectoTranslatePipe implements PipeTransform {
    * Transforms the key into a translated string.
    * 
    * @param key The translation key
-   * @param paramsOrLang Optional interpolation parameters OR language code
-   * @param lang Optional language code if parameters were provided as the second argument
+   * @param paramsOrLang Optional interpolation parameters OR forced language code (requires `preloadAll: true`)
+   * @param lang Optional forced language code if parameters were provided as the second argument (requires `preloadAll: true`)
    */
   transform(key: string, paramsOrLang?: { [key: string]: any } | string, lang?: string): string {
     if (!key) return '';
